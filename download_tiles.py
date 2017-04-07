@@ -4,62 +4,87 @@ import urllib2
 import os, sys
 from gmap_utils import *
 
+import threading
+from fake_useragent import UserAgent #https://github.com/hellysmile/fake-useragent
+
 import time
 import random
 
-def download_tiles(zoom, lat_start, lat_stop, lon_start, lon_stop, satellite=True):
-
+def downloadTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop), max_threads=1, DEBUG=True):
+    ua = UserAgent()
+    spawn_count = 0
+    if len(source) !=1:
+        if DEBUG: print "-- unknown data source"
+        return
+    key = source.keys()[0]
+    ext = source[key]
     start_x, start_y = latlon2xy(zoom, lat_start, lon_start)
     stop_x, stop_y = latlon2xy(zoom, lat_stop, lon_stop)
-    
-    print "x range", start_x, stop_x
-    print "y range", start_y, stop_y
-    
-    user_agent = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; de-at) AppleWebKit/533.21.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.1'
+    if DEBUG: print "x range", start_x, stop_x
+    if DEBUG: print "y range", start_y, stop_y
+    user_agent = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_9; us-at) AppleWebKit/533.23.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.3'
     headers = { 'User-Agent' : user_agent }
-    
     for x in xrange(start_x, stop_x):
         for y in xrange(start_y, stop_y):
-            
-            url = None
-            filename = None
-            
-            if satellite:        
-                url = "http://khm2.google.com/kh/v=708&s=Gal&x=%d&y=%d&z=%d" % (x, y, zoom)
-                filename = "%d_%d_%d_s.jpg" % (zoom, x, y)
-            else:
-                url = "http://mt1.google.com/vt/lyrs=h@162000000&hl=en&x=%d&s=&y=%d&z=%d" % (x, y, zoom)
-                filename = "%d_%d_%d_r.png" % (zoom, x, y)    
-    
+            filename = "%s_%s_%d_%d_%d.%s" % (key, ext['type'], zoom, x, y, ext['ext'])
+            url = ''
+            url += str( ext['prefix'] )
+            url += str( ext['x'] )    + str(x)
+            url += str( ext['y'] )    + str(y)
+            url += str( ext['zoom'] ) + str(zoom)
+            url += str( ext['postfix'] )
             if not os.path.exists(filename):
-                
-                bytes = None
-                
-                try:
-                    req = urllib2.Request(url, data=None, headers=headers)
-                    response = urllib2.urlopen(req)
-                    bytes = response.read()
-                except Exception, e:
-                    print "--", filename, "->", e
-                    sys.exit(1)
-                
-                if bytes.startswith("<html>"):
-                    print "-- forbidden", filename
-                    sys.exit(1)
-                
-                print "-- saving", filename
-                
-                f = open(filename,'wb')
-                f.write(bytes)
-                f.close()
-                
+                user_agent = ua.random
+                if max_threads > 1:
+                    threads = []
+                    for i in range(max_threads):
+                        user_agent = ua.random
+                        t = threading.Thread( target=worker, args=(url,filename, user_agent, headers) )
+                        threads.append(t)
+                        t.start()
+                        spawn_count += 1
+                        time.sleep(random.random() / max_threads)
+                    if DEBUG: print '-- Spawned Workers', spawn_count
+                    for i in range(len(threads)):
+                        threads[i].join()
+                else:
+                    worker(url,filename, user_agent, headers)
+                    if DEBUG:
+                        spawn_count += 1
+                        sys.stdout.write('.')
+                        if spawn_count % 100 == 0: print ''
+                        sys.stdout.flush()
                 time.sleep(1 + random.random())
 
-if __name__ == "__main__":
-    
-    zoom = 15
 
+def worker(url,filename, user_agent, headers, DEBUG=False):
+    bytes = None
+    try:
+        req = urllib2.Request(url, data=None, headers=headers)
+        response = urllib2.urlopen(req)
+        bytes = response.read()
+    except Exception, e:
+        if DEBUG: print "--", filename, "->", e
+        sys.exit(1)
+    if bytes.startswith("<html>"):
+        if DEBUG: print "-- Forbidden", filename
+        sys.exit(1)
+    if DEBUG: print "-- Saving", filename
+    f = open(filename,'wb')
+    f.write(bytes)
+    f.close()
+
+
+def main():
+    from sources import searchSource, ppjson
+    found_sources = searchSource('sources.json',search={'type':'sat'})
+    key = found_sources.keys()[0]
+    source = {key: found_sources[key] }
+    ppjson(source)
+    zoom = 15
     lat_start, lon_start = 46.53, 6.6
     lat_stop, lon_stop = 46.49, 6.7
-        
-    download_tiles(zoom, lat_start, lat_stop, lon_start, lon_stop, satellite=True)
+    downloadTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop))
+
+if __name__ == '__main__':
+    main()
