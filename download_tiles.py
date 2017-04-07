@@ -25,7 +25,7 @@ def download_tiles(zoom, lat_start, lat_stop, lon_start, lon_stop, satellite=Tru
             filename = None
             
             if satellite:        
-                url = "http://khm1.google.com/kh?v=87&hl=en&x=%d&y=%d&z=%d" % (x, y, zoom)
+                url = "http://khm2.google.com/kh/v=708&s=Gal&x=%d&y=%d&z=%d" % (x, y, zoom)
                 filename = "%d_%d_%d_s.jpg" % (zoom, x, y)
             else:
                 url = "http://mt1.google.com/vt/lyrs=h@162000000&hl=en&x=%d&s=&y=%d&z=%d" % (x, y, zoom)
