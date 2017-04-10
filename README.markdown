@@ -37,7 +37,7 @@ Then, run `$ python main.py` to fetch, merge and display tiles:
     y range 398 403
     width: 1792
     height: 1280
-    Don
+    Done
 
 
 ## Select Tile Source
