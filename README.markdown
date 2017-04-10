@@ -65,14 +65,11 @@ Example usage/tests can be run by `$ python merge_tiles.py` after the tiles have
 ## References
 
 Packages used:
+
     PIL - For merging images (`merge_tiles.py`)
-    
     json - For loading tile sources (`sources.py`)
-    
     urllib2 - For downloading http(s) data (`download_tiles.py`)
-    
     threading - For multiple http(s) workers
-    
     fake_useragent - For generating useragent strings
 
 
