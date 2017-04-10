@@ -47,9 +47,9 @@ def main():
     found_sources = searchSource('sources.json',search={'type':'sat'})
     key = found_sources.keys()[0]
     source = {key: found_sources[key]}
-    zoom = 15
-    lat_start, lon_start = 46.53, 6.6
-    lat_stop, lon_stop = 46.49, 6.7
+    zoom = 10
+    lat_start, lon_start = 36.99, -114.03
+    lat_stop, lon_stop = 35.64, -111.60
     mergeTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop))
 
 

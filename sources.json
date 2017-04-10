@@ -1,60 +1,60 @@
 {
     "references": {
         "scales": [
-            "http://gis.stackexchange.com/questions/7430/what-ratio-scales-do-google-maps-zoom-levels-correspond-to",
-            "http://webhelp.esri.com/arcgisserver/9.3/java/index.htm#designing_overlay_gm_mve.htm",
+            "http://gis.stackexchange.com/questions/7430/what-ratio-scales-do-google-maps-zoom-levels-correspond-to", 
+            "http://webhelp.esri.com/arcgisserver/9.3/java/index.htm#designing_overlay_gm_mve.htm", 
             "http://webhelp.esri.com/arcgisserver/9.3/java/gmaps_ve_scales.txt"
-        ],
+        ], 
         "sources": [
-            "https://github.com/nst/gmap_tiles/blob/master/download_tiles.py",
-            "https://groups.google.com/forum/#!topic/google-maps-api/3RvxRebArfg",
+            "https://github.com/nst/gmap_tiles/blob/master/download_tiles.py", 
+            "https://groups.google.com/forum/#!topic/google-maps-api/3RvxRebArfg", 
             "https://community.tableau.com/message/277962"
         ]
-    },
+    }, 
     "scales": {
-        "1": "591657550.500000",
-        "10": "1155581.153000",
-        "11": "577790.576700",
-        "12": "288895.288400",
-        "13": "144447.644200",
-        "14": "72223.822090",
-        "15": "36111.911040",
-        "16": "18055.955520",
-        "17": "9027.977761",
-        "18": "4513.988880",
-        "19": "2256.994440",
-        "2": "295828775.300000",
-        "20": "1128.497220",
-        "3": "147914387.600000",
-        "4": "73957193.820000",
-        "5": "36978596.910000",
-        "6": "18489298.450000",
-        "7": "9244649.227000",
-        "8": "4622324.614000",
+        "1": "591657550.500000", 
+        "10": "1155581.153000", 
+        "11": "577790.576700", 
+        "12": "288895.288400", 
+        "13": "144447.644200", 
+        "14": "72223.822090", 
+        "15": "36111.911040", 
+        "16": "18055.955520", 
+        "17": "9027.977761", 
+        "18": "4513.988880", 
+        "19": "2256.994440", 
+        "2": "295828775.300000", 
+        "20": "1128.497220", 
+        "3": "147914387.600000", 
+        "4": "73957193.820000", 
+        "5": "36978596.910000", 
+        "6": "18489298.450000", 
+        "7": "9244649.227000", 
+        "8": "4622324.614000", 
         "9": "2311162.307000"
-    },
+    }, 
     "sources": {
-        "-8682183891462335602": {
-            "ext": "png",
-            "name": "Google Road",
-            "postfix": "",
-            "prefix": "https://mt1.google.com/vt/lyrs=h@162000000&hl=en",
-            "type": "road",
-            "x": "&x=",
-            "y": "&s=&y=",
-            "zoom": "&z=",
-            "notes": "Google will blacklist overuse for 24H, and normally discourages direct access like this. The http or https links work equally."
-        },
-        "5271016846446686592": {
-            "ext": "jpg",
-            "name": "Google Satellite",
-            "postfix": "",
-            "prefix": "https://khm2.google.com/kh/v=708&s=Gal",
-            "type": "satellite",
-            "x": "&x=",
-            "y": "&y=",
-            "zoom": "&z=",
-            "notes": "Google will blacklist overuse for 24H, v=708 is the API version number which will sometimes be updated and must be correct, and normally discourages direct access like this. The http or https links work equally."
+        "-613008836546386633": {
+            "ext": "jpg", 
+            "name": "Google Satellite", 
+            "notes": "Google will blacklist overuse for 24H, v=708 is the API version number which will sometimes be updated and must be correct, and normally discourages direct access like this. The http or https links work equally.", 
+            "postfix": "", 
+            "prefix": "https://khm2.google.com/kh/v=708&s=Gal", 
+            "type": "satellite", 
+            "x": "&x=", 
+            "y": "&y=", 
+            "zoom": "&z="
+        }, 
+        "2723020510372651838": {
+            "ext": "png", 
+            "name": "Google Road", 
+            "notes": "Google will blacklist overuse for 24H, and normally discourages direct access like this. The http or https links work equally.", 
+            "postfix": "", 
+            "prefix": "https://mt1.google.com/vt/lyrs=h@162000000&hl=en", 
+            "type": "road", 
+            "x": "&x=", 
+            "y": "&s=&y=", 
+            "zoom": "&z="
         }
     }
 }
