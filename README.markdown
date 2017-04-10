@@ -67,5 +67,5 @@ Packages used:
     threading - For multiple http(s) workers
     fake_useragent - For generating useragent strings
 
-Original repository:
-    ![Google Maps Tiles](https://raw.github.com/nst/gmap_tiles/master/gmap.png)
+Example `main.py` Outcome:
+    ![Google Maps Tiles](https://raw.github.com/br382/gmap_tiles/master/gmap.png)
