@@ -43,29 +43,39 @@ Then, run `$ python main.py` to fetch, merge and display tiles:
 ## Select Tile Source
 
 Methods from `sources.py` select, add, or remove information from `sources.json`.
+
 Example usage/tests can be run by `$ python sources.py`.
+
 Note: A source 'uid' is the hash of the source fields, so updating a source may cause methods to ignore already fetched tiles.
 
 
 ## Download Map Tiles
 
 Methods from `download_tiles.py` convert zoom and cordinates via `gmap_utils.py` into urls to download into the current directory.
+
 Example usage/tests can be run by `$ python download_tiles.py`.
 
 
 ## Merge Map Tiles
 Methods from `merge_tiles.py` use a known image source and coordinate bounds to generate a single stitched image.
+
 Example usage/tests can be run by `$ python merge_tiles.py` after the tiles have been downloaded.
 
 
-### References
+## References
 
 Packages used:
     PIL - For merging images (`merge_tiles.py`)
+    
     json - For loading tile sources (`sources.py`)
+    
     urllib2 - For downloading http(s) data (`download_tiles.py`)
+    
     threading - For multiple http(s) workers
+    
     fake_useragent - For generating useragent strings
 
-Example `main.py` Outcome:
-    ![Google Maps Tiles](https://raw.github.com/br382/gmap_tiles/master/gmap.png)
+
+## Example `main.py` Outcome
+
+![Google Maps Tiles](https://raw.github.com/br382/gmap_tiles/master/gmap.png)
