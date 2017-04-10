@@ -32,7 +32,7 @@ def ppjson(inputs):
         except:
             print json.dumps(inputs, indent=4, sort_keys=True)
 
-def addSource(filename, type,name,prefix,postfix,x,y,zoom,ext='png', DEBUG=False):
+def addSource(filename, type,name,prefix,postfix,x,y,zoom,notes="",ext='png', DEBUG=False):
     try:
         struct = openjson(filename)
     except:
@@ -47,6 +47,7 @@ def addSource(filename, type,name,prefix,postfix,x,y,zoom,ext='png', DEBUG=False
     new["y"]       = str(y)
     new["zoom"]    = str(zoom)
     new["ext"]     = str(ext)
+    new["notes"]   = str(notes)
     uid = str(hash( json.dumps(new) ))
     try:
         len(struct["sources"])

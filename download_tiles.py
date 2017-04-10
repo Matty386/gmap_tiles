@@ -5,16 +5,22 @@ import os, sys
 from gmap_utils import *
 
 import threading
-from fake_useragent import UserAgent #https://github.com/hellysmile/fake-useragent
+try:
+    from fake_useragent import UserAgent #https://github.com/hellysmile/fake-useragent
+except:
+    pass
 
 import time
 import random
 
-def downloadTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop), max_threads=1, DEBUG=True):
-    ua = UserAgent()
+def downloadTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop), max_threads=1, DEBUG=True, ERR=True):
+    try:
+        ua = UserAgent()
+    except:
+        pass
     spawn_count = 0
     if len(source) !=1:
-        if DEBUG: print "-- unknown data source"
+        if ERR: print "-- unknown data source"
         return
     key = source.keys()[0]
     ext = source[key]
@@ -22,6 +28,7 @@ def downloadTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop), max_
     stop_x, stop_y = latlon2xy(zoom, lat_stop, lon_stop)
     if DEBUG: print "x range", start_x, stop_x
     if DEBUG: print "y range", start_y, stop_y
+    if DEBUG: print "Total Tiles: ", (stop_x - start_x) * (stop_y - start_y)
     user_agent = 'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_9; us-at) AppleWebKit/533.23.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.3'
     headers = { 'User-Agent' : user_agent }
     for x in xrange(start_x, stop_x):
@@ -38,13 +45,20 @@ def downloadTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop), max_
                 if max_threads > 1:
                     threads = []
                     for i in range(max_threads):
-                        user_agent = ua.random
+                        try:
+                            user_agent = ua.random
+                            headers = { 'User-Agent': user_agent }
+                        except:
+                            pass
                         t = threading.Thread( target=worker, args=(url,filename, user_agent, headers) )
                         threads.append(t)
                         t.start()
                         spawn_count += 1
                         time.sleep(random.random() / max_threads)
-                    if DEBUG: print '-- Spawned Workers', spawn_count
+                    if DEBUG:
+                        x_percent = float((start_x - x))/float(start_x - stop_x)
+                        y_percent = float((start_y - y))/float(start_y - stop_y)
+                        print '-- Spawned Workers', spawn_count, 100*x_percent, 100*y_percent
                     for i in range(len(threads)):
                         threads[i].join()
                 else:
@@ -57,17 +71,17 @@ def downloadTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop), max_
                 time.sleep(1 + random.random())
 
 
-def worker(url,filename, user_agent, headers, DEBUG=False):
+def worker(url,filename, user_agent, headers, DEBUG=False, ERR=True):
     bytes = None
     try:
         req = urllib2.Request(url, data=None, headers=headers)
         response = urllib2.urlopen(req)
         bytes = response.read()
     except Exception, e:
-        if DEBUG: print "--", filename, "->", e
+        if ERR: print "--", filename, "->", e
         sys.exit(1)
     if bytes.startswith("<html>"):
-        if DEBUG: print "-- Forbidden", filename
+        if ERR: print "-- Forbidden", filename
         sys.exit(1)
     if DEBUG: print "-- Saving", filename
     f = open(filename,'wb')
