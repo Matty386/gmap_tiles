@@ -5,10 +5,15 @@
             "http://webhelp.esri.com/arcgisserver/9.3/java/index.htm#designing_overlay_gm_mve.htm", 
             "http://webhelp.esri.com/arcgisserver/9.3/java/gmaps_ve_scales.txt"
         ], 
-        "sources": [
+        "maps": [
             "https://github.com/nst/gmap_tiles/blob/master/download_tiles.py", 
             "https://groups.google.com/forum/#!topic/google-maps-api/3RvxRebArfg", 
             "https://community.tableau.com/message/277962"
+        ],
+        "coordinates": [
+            "https://groups.google.com/forum/#!topic/Google-Maps-API/NICY9wcl_JY",
+            "http://stackoverflow.com/questions/6671183/calculate-the-center-point-of-multiple-latitude-longitude-coordinate-pairs",
+            "developers.google.com/maps/documentation/javascript/examples/map-coordinates"
         ]
     }, 
     "scales": {
