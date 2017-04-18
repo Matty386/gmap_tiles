@@ -13,7 +13,8 @@
         "coordinates": [
             "https://groups.google.com/forum/#!topic/Google-Maps-API/NICY9wcl_JY",
             "http://stackoverflow.com/questions/6671183/calculate-the-center-point-of-multiple-latitude-longitude-coordinate-pairs",
-            "developers.google.com/maps/documentation/javascript/examples/map-coordinates"
+            "developers.google.com/maps/documentation/javascript/examples/map-coordinates",
+            "http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection"
         ]
     }, 
     "scales": {
