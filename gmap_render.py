@@ -181,7 +181,7 @@ class GmapRender:
         if type(x) != type(int(0)):    return None
         if type(y) != type(int(0)):    return None
         if (x<0) or (x>=self._res[0]): return None
-        if (y<0) or (x>=self._res[1]): return None
+        if (y<0) or (y>=self._res[1]): return None
         c_px     = (self._res[0]/2,self._res[1]/2)
         c_latlon = latlonCenter(self._coords_bound)
         c_abspx  = latlon2abspx(self._zoom, c_latlon[0], c_latlon[1])
