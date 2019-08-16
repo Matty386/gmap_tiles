@@ -25,18 +25,18 @@ def ppjson(inputs):
     """
     try:
         with open(inputs, 'r') as fd:
-            print json.dumps(json.loads(fd.read()), indent=4, sort_keys=True)
+            print(json.dumps(json.loads(fd.read()), indent=4, sort_keys=True))
     except:
         try:
-            print json.dumps(json.loads(inputs), indent=4, sort_keys=True)
+            print(json.dumps(json.loads(inputs), indent=4, sort_keys=True))
         except:
-            print json.dumps(inputs, indent=4, sort_keys=True)
+            print(json.dumps(inputs, indent=4, sort_keys=True))
 
 def addSource(filename, type,name,prefix,postfix,x,y,zoom,notes="",ext='png', DEBUG=False):
     try:
         struct = openjson(filename)
     except:
-        if DEBUG: print 'unable to save json contents'
+        if DEBUG: print('unable to save json contents')
         return False
     new = {}
     new["type"]    = str(type)
@@ -57,7 +57,7 @@ def addSource(filename, type,name,prefix,postfix,x,y,zoom,notes="",ext='png', DE
     try:
         savejson(filename, struct)
     except:
-        if DEBUG: print 'unable to save json contents'
+        if DEBUG: print('unable to save json contents')
         return False
     return True
 
@@ -68,14 +68,14 @@ def searchSource(filename, search={}, DEBUG=False):
     except:
         struct = {"sources":{}}
     output = {"sources":{}}
-    if DEBUG: print json.dumps(struct, indent=4, sort_keys=True)
-    if DEBUG: print search.keys()
-    for uid in struct["sources"].keys():
-        for attrib in search.keys():
+    if DEBUG: print(json.dumps(struct, indent=4, sort_keys=True))
+    if DEBUG: print(list(search.keys()))
+    for uid in list(struct["sources"].keys()):
+        for attrib in list(search.keys()):
             try:
                 val = struct["sources"][uid][attrib]
                 test = (val.find( search[attrib] )>=0)
-                if DEBUG: print [uid,attrib,val,search[attrib], test]
+                if DEBUG: print([uid,attrib,val,search[attrib], test])
                 if test:
                     output["sources"][uid] = struct["sources"][uid]
             except:
@@ -94,16 +94,16 @@ def rmSource(filename, uid):
 
 
 def main():
-    print '-- Insert Test Source'
+    print('-- Insert Test Source')
     fname='sources.json'
     addSource(fname, 'Satellite','Test Source','www.google.com/','&fetch=True','&x=','&y=','&z=')
     ppjson(fname)
-    print '-- Search For Test Source'
+    print('-- Search For Test Source')
     found = searchSource(fname, search={"name":"ource"})
     ppjson(found)
-    print '-- Remove Test Source'
-    for key in found.keys():
-        print '--- Removing: ', key, rmSource(fname, key)
+    print('-- Remove Test Source')
+    for key in list(found.keys()):
+        print('--- Removing: ', key, rmSource(fname, key))
     ppjson(fname)
 
 if __name__ == '__main__':

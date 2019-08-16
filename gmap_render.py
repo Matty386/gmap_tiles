@@ -1,5 +1,5 @@
 import os
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from math       import sqrt
 from time       import time, sleep
 from gmap_utils import *
@@ -119,7 +119,7 @@ class GmapRender:
         Moves failed jobs back into queue for retries later.
         """
         #join workers, pop from threads, if failed push to queue
-        for ind in reversed(xrange(len( self._download_threads ))):
+        for ind in reversed(range(len( self._download_threads ))):
             if not( self._download_threads[ind].isAlive() ): #assert job is completed
                 self._download_threads[ind].join()           #should not block, because job is complete
                 del self._download_threads[ind]              #rm job handle
@@ -134,7 +134,7 @@ class GmapRender:
         ind = len(self._download_queue)-1
         #print 'MSG -- checkWorkers() len() %s' % (str(ind))
         while (len(self._download_threads)<self._download_threads_max) and (ind>=0):
-            key = self._download_queue.keys()[ind]
+            key = list(self._download_queue.keys())[ind]
             val = self._download_queue[key]
             #print 'MSG -- checkWorkers() %s' % (str((key,val)) )
             if (time() - val > self._download_retry_after):   #only retry after timeout
@@ -169,7 +169,7 @@ class GmapRender:
         """
         return len(self._download_threads)
     
-    def px2latlon(self, (x,y)):
+    def px2latlon(self, xxx_todo_changeme):
         """
         On self._image_out of size: self._res=(width,height)
         Given input (x,y) return (lat,lon) or None on invalid pixel input.
@@ -178,6 +178,7 @@ class GmapRender:
           https://github.com/nst/gmap_tiles
           https://groups.google.com/forum/#!topic/Google-Maps-API/NICY9wcl_JY
         """
+        (x,y) = xxx_todo_changeme
         if type(x) != type(int(0)):    return None
         if type(y) != type(int(0)):    return None
         if (x<0) or (x>=self._res[0]): return None
@@ -187,10 +188,10 @@ class GmapRender:
         c_abspx  = latlon2abspx(self._zoom, c_latlon[0], c_latlon[1])
         d_abspx  = (c_abspx[0]-c_px[0], c_abspx[1]-c_px[1])
         t_abspx  = (d_abspx[0]+x, d_abspx[1]+y)
-        print 'MSG -- Offset delta (x_off,y_off)', (d_abspx)
-        print 'MSG -- Center (zoom) (lat,lon) (x,y) (x_abs,y_abs)', (self._zoom),(c_latlon),(c_px),(c_abspx)
+        print('MSG -- Offset delta (x_off,y_off)', (d_abspx))
+        print('MSG -- Center (zoom) (lat,lon) (x,y) (x_abs,y_abs)', (self._zoom),(c_latlon),(c_px),(c_abspx))
         t_latlon = abspx2latlon(self._zoom, t_abspx[0], t_abspx[1])
-        print 'MSG -- Target (zoom) (lat,lon) (x,y) (x_abs,y_abs)', (self._zoom),(t_latlon),(x,y),(t_abspx)
+        print('MSG -- Target (zoom) (lat,lon) (x,y) (x_abs,y_abs)', (self._zoom),(t_latlon),(x,y),(t_abspx))
         return t_latlon
         
         center_norm_px = (self._res[0]/2,self._res[1]/2)
@@ -202,7 +203,7 @@ class GmapRender:
         #print 'MSG -- ABS to image pixel offset ', abs_px_offset
         return abspx2latlon(self._zoom, target_abs_px[0], target_abs_px[1])
 
-    def latlon2px(self, (lat,lon)):
+    def latlon2px(self, xxx_todo_changeme1):
         """
         Given (lat,lon) coordinates as type float()
         Return (x,y) if coord is on the image, else Return None
@@ -210,6 +211,7 @@ class GmapRender:
           https://github.com/nst/gmap_tiles
           https://groups.google.com/forum/#!topic/Google-Maps-API/NICY9wcl_JY
         """
+        (lat,lon) = xxx_todo_changeme1
         if type(lat) != type(float(0)): return None
         if type(lat) != type(float(0)): return None
         center_norm_px = (self._res[0]/2,self._res[1]/2)
@@ -281,10 +283,10 @@ class GmapRender:
         head = {'User-Agent': useragent}
         stamp,key,msg = (0,(url,filename),'')
         try:
-            req = urllib2.Request(url, data=None,headers=head)
-            rsp = urllib2.urlopen(req)
+            req = urllib.request.Request(url, data=None,headers=head)
+            rsp = urllib.request.urlopen(req)
             dat = rsp.read()
-        except Exception, e:
+        except Exception as e:
             stamp = time()
             msg   = 'ERR -- ' + str(e) + ' ' + str(url) + ' -> ' + str(filename)
             out_list[id] = (stamp,key,msg)
@@ -300,7 +302,8 @@ class GmapRender:
         out_list[id] = (stamp,key,msg)
         return
     
-    def _genUrl(self, layer_uid, (x,y,zoom)):
+    def _genUrl(self, layer_uid, xxx_todo_changeme2):
+        (x,y,zoom) = xxx_todo_changeme2
         source = self._image_overlays['sources'][layer_uid]
         url = ''
         url += source['prefix']
@@ -310,7 +313,8 @@ class GmapRender:
         url += source['postfix']
         return url
     
-    def _genFilename(self, layer_uid, (x,y,zoom)):
+    def _genFilename(self, layer_uid, xxx_todo_changeme3):
+        (x,y,zoom) = xxx_todo_changeme3
         ext = self._image_overlays['sources'][layer_uid]['ext']
         d = self._image_dir
         if len(d)>0:
@@ -318,13 +322,14 @@ class GmapRender:
                 d += os.sep
         return d + '_'.join( [str(layer_uid),str(zoom),str(x),str(y)] ) + '.' + str(ext)
     
-    def _queueTiles(self, layer_uid, (x_range,y_range,zoom)):
+    def _queueTiles(self, layer_uid, xxx_todo_changeme4):
         """
         Add files to work queue.
         Arbitrary ordering.
         """
-        for x in xrange(min(x_range),max(x_range)):
-            for y in xrange(min(y_range),max(y_range)):
+        (x_range,y_range,zoom) = xxx_todo_changeme4
+        for x in range(min(x_range),max(x_range)):
+            for y in range(min(y_range),max(y_range)):
                 url      = self._genUrl(     layer_uid, (x,y,zoom))
                 filename = self._genFilename(layer_uid, (x,y,zoom))
                 try:
@@ -336,17 +341,18 @@ class GmapRender:
                     except: self._download_queue[ (url,filename) ] = 0
         pass #add files to queue
     
-    def _mergeTiles(self, layer, (x_range, y_range, zoom)):
+    def _mergeTiles(self, layer, xxx_todo_changeme5):
         """
         Attempts to load image files from disk, and returns stitched image.
         """
+        (x_range, y_range, zoom) = xxx_todo_changeme5
         x_start, x_stop = min(x_range), max(x_range)
         y_start, y_stop = min(y_range), max(y_range)
         TILE_SIZE = (256,256)
         wid, hei = (x_stop - x_start) * TILE_SIZE[0], (y_stop - y_start) * TILE_SIZE[1]
         result = Image.new('RGBA', (wid, hei))
-        for x in xrange(x_start, x_stop):
-            for y in xrange(y_start, y_stop):
+        for x in range(x_start, x_stop):
+            for y in range(y_start, y_stop):
                 filename = self._genFilename(layer, (x,y,zoom))
                 if not os.path.exists(filename):
                     #print "ERROR -- Missing ", filename
@@ -355,8 +361,8 @@ class GmapRender:
                 y_paste = hei - (y_stop - y) * TILE_SIZE[1]
                 try:
                     img = Image.open(filename)
-                except Exception, e:
-                    print 'ERROR -- %s, Removing %s' % (e, filename)
+                except Exception as e:
+                    print('ERROR -- %s, Removing %s' % (e, filename))
                     os.remove(filename)
                 result.paste(img, (x_paste, y_paste))
                 del img
@@ -478,12 +484,12 @@ def main():
     renderObj.setVals(res=resolution, coords=coord_list, image_overlays=sources, heading_overlay=compass, compass_filename='./Compass_rose_transparent.png')
     renderObj.update()                 #Queue up download jobs.
     while renderObj.checkWorkers() >0: #Returns total remaining downloads.
-        print 'MSG -- in(Thread,Queue) ', ( renderObj.inThreads(), renderObj.inQueue() ) 
+        print('MSG -- in(Thread,Queue) ', ( renderObj.inThreads(), renderObj.inQueue() )) 
         sleep(1 + random.random())     #Launches up to max_threads workers.
     img = renderObj.update()           #Composes output image.
-    print 'MSG -- Output Resolution ', img.size
-    print 'MSG -- Pixel',        px_point,   'is the lat-lon', renderObj.px2latlon(px_point)
-    print 'MSG -- Icon lat-lon', latlon_point, 'is the pixel',   renderObj.latlon2px(latlon_point)
+    print('MSG -- Output Resolution ', img.size)
+    print('MSG -- Pixel',        px_point,   'is the lat-lon', renderObj.px2latlon(px_point))
+    print('MSG -- Icon lat-lon', latlon_point, 'is the pixel',   renderObj.latlon2px(latlon_point))
     img.show()
 
 if __name__ == '__main__':

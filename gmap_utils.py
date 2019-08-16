@@ -99,10 +99,11 @@ def latlon2xy(z,lat,lon):
     x,y = latlon2abspx(z,lat,lon)
     return (int(x/TILE_SIZE), int(y/TILE_SIZE))
 
-def latlon2xyz((lat,lon)):
+def latlon2xyz(xxx_todo_changeme):
     """
     Approximate spherical to cartesian conversion
     """
+    (lat,lon) = xxx_todo_changeme
     rad_lat, rad_lon = (deg2rad(lat),deg2rad(lon))
     x = math.cos(rad_lat) * math.cos(rad_lon)
     y = math.cos(rad_lat) * math.sin(rad_lon)
@@ -142,20 +143,23 @@ def latlonRadius(center_coord, points, sphere_radius):
             dist = val
     return dist
 
-def distanceTo((lat0,lon0),(lat1,lon1),sphere_radius):
+def distanceTo(xxx_todo_changeme1, xxx_todo_changeme2,sphere_radius):
     """
     Source: http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates
     """
+    (lat0,lon0) = xxx_todo_changeme1
+    (lat1,lon1) = xxx_todo_changeme2
     rad_lat0, rad_lon0 = deg2rad(lat0), deg2rad(lon0)
     rad_lat1, rad_lon1 = deg2rad(lat1), deg2rad(lon1)
     val  = math.sin(rad_lat0) * math.sin(rad_lat1)
     val += math.cos(rad_lat0) * math.cos(rad_lat1) * math.cos(rad_lon0 - rad_lon1)
     return math.acos( val ) * sphere_radius
 
-def boundingCoordinates((lat,lon),dist,sphere_radius):
+def boundingCoordinates(xxx_todo_changeme3,dist,sphere_radius):
     """
     Source: http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates
     """
+    (lat,lon) = xxx_todo_changeme3
     assert(dist >=0)
     assert(sphere_radius >=0)
     rad_lat, rad_lon = deg2rad(lat), deg2rad(lon)
@@ -245,35 +249,35 @@ def main():
     }
     """
     tests_len = 0
-    for k in TESTS.keys():
+    for k in list(TESTS.keys()):
         v = len(TESTS[k])
         if tests_len <=0:
             tests_len = v
         else:
             tests_len = min(tests_len,v)
     
-    for i in xrange(tests_len):
+    for i in range(tests_len):
         coord    = TESTS["COORDS"][i]
         px       = TESTS["ABS_PX"][i]
         tile     = TESTS["TILE"][i]
         zoom     = TESTS["ZOOM"][i]
         px_err   = abspx2latlonErrMargin(zoom,px[0],px[1])
         tile_err = xy2latlonErrMargin(zoom,tile[0],tile[1])
-        print 'MSG -- ', i
-        print 'MSG -- Testing Inputs: (zoom, coord, px, tile)', (zoom, coord, px, tile)
-        print 'MSG -- Max Error of (px, tile) in lat-lon', (px_err, tile_err)
-        val = latlon2abspx(zoom,coord[0],coord[1]); print 'MSG -- Lat-lon to pixel: val, expected ',val,px
+        print('MSG -- ', i)
+        print('MSG -- Testing Inputs: (zoom, coord, px, tile)', (zoom, coord, px, tile))
+        print('MSG -- Max Error of (px, tile) in lat-lon', (px_err, tile_err))
+        val = latlon2abspx(zoom,coord[0],coord[1]); print('MSG -- Lat-lon to pixel: val, expected ',val,px)
         assert( val   == px   )
-        val = latlon2xy(zoom,coord[0],coord[1]); print 'MSG -- Lat-lon to tile: val, expected ',val,tile
+        val = latlon2xy(zoom,coord[0],coord[1]); print('MSG -- Lat-lon to tile: val, expected ',val,tile)
         assert( val   == tile )
-        val = abspx2latlon(zoom,px[0],px[1]); delta=((val[0]-coord[0]),(val[1]-coord[1])); print 'MSG -- Pixel to lat-lon: val, expected ', val, coord
+        val = abspx2latlon(zoom,px[0],px[1]); delta=((val[0]-coord[0]),(val[1]-coord[1])); print('MSG -- Pixel to lat-lon: val, expected ', val, coord)
         assert( (delta[0]<px_err[0])and(delta[1]<px_err[1]) )
-        val = xy2latlon(zoom,tile[0],tile[1]); delta=((val[0]-coord[0]),(val[1]-coord[1])); print 'MSG -- Tile to lat-lon: val, expected ', val, coord
+        val = xy2latlon(zoom,tile[0],tile[1]); delta=((val[0]-coord[0]),(val[1]-coord[1])); print('MSG -- Tile to lat-lon: val, expected ', val, coord)
         assert( (delta[0]<tile_err[0])and(delta[1]<tile_err[1]) )
-        val = (px[0]/TILE_SIZE,px[1]/TILE_SIZE); print 'MSG -- Absolute pixels to tile index: val, expected',val,tile
+        val = (px[0]/TILE_SIZE,px[1]/TILE_SIZE); print('MSG -- Absolute pixels to tile index: val, expected',val,tile)
         assert( val   == tile )
-    print ''
-    print 'MSG -- Tests Completed Successfully'
+    print('')
+    print('MSG -- Tests Completed Successfully')
 
 if __name__ == '__main__':
     main()
