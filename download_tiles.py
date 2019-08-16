@@ -78,12 +78,6 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
                 if DEBUG:
                     x_percent = float((start_x - x)) / float(start_x - stop_x)
                     y_percent = float((start_y - y)) / float(start_y - stop_y)
-                    print(
-                        "-- Spawned Workers",
-                        spawn_count,
-                        100 * x_percent,
-                        100 * y_percent,
-                    )
                 for i in range(len(threads)):
                     threads[i].join()
             else:
