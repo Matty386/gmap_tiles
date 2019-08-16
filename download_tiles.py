@@ -99,7 +99,7 @@ def worker(url, filename, user_agent, headers, DEBUG=False, ERR=True):
         if ERR:
             print("--", filename, "->", e)
         sys.exit(1)
-    if bytes.startswith("<html>"):
+    if bytes.startswith(b"<html>"):
         if ERR:
             print("-- Forbidden", filename)
         sys.exit(1)
