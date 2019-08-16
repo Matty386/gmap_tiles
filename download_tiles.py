@@ -8,7 +8,9 @@ import threading
 
 try:
     from fake_useragent import UserAgent  # https://github.com/hellysmile/fake-useragent
+    print("Using random user agents.")
 except:
+    print("Using default user agent.")
     pass
 
 import time
