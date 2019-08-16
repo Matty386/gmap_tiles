@@ -21,10 +21,6 @@ import numpy as np
 
 def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ERR=True):
     (lat_start, lat_stop, lon_start, lon_stop) = xxx_todo_changeme
-    try:
-        ua = UserAgent()
-    except:
-        pass
     spawn_count = 0
     if len(source) != 1:
         if ERR:
@@ -40,8 +36,6 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
         print("y range", start_y, stop_y)
     if DEBUG:
         print("Total Tiles: ", (stop_x - start_x) * (stop_y - start_y))
-    user_agent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_9; us-at) AppleWebKit/533.23.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.3"
-    headers = {"User-Agent": user_agent}
 
     x_range = range(start_x, stop_x)
     y_range = range(start_y, stop_y)
@@ -56,38 +50,37 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
         url += str(ext["zoom"]) + str(zoom)
         url += str(ext["postfix"])
         if not os.path.exists(filename):
-            try:
-                user_agent = ua.random
-            except UnboundLocalError:
-                pass
             if max_threads > 1:
                 threads = []
                 for i in range(max_threads):
-                    try:
-                        user_agent = ua.random
-                        headers = {"User-Agent": user_agent}
-                    except UnboundLocalError:
-                        pass
                     t = threading.Thread(
-                        target=worker, args=(url, filename, user_agent, headers)
+                        target=worker, args=(url, filename)
                     )
                     threads.append(t)
                     t.start()
                     spawn_count += 1
                     time.sleep(random.random() / max_threads)
-                if DEBUG:
-                    x_percent = float((start_x - x)) / float(start_x - stop_x)
-                    y_percent = float((start_y - y)) / float(start_y - stop_y)
                 for i in range(len(threads)):
                     threads[i].join()
             else:
-                worker(url, filename, user_agent, headers)
+                worker(url, filename)
             time.sleep(1 + random.random())
 
 
-def worker(url, filename, user_agent, headers, DEBUG=False, ERR=True):
+def get_user_agent():
+    try:
+        ua = UserAgent()
+        user_agent = ua.random
+    except UnboundLocalError:
+        user_agent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_9; us-at) AppleWebKit/533.23.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.3"
+    return user_agent
+
+
+def worker(url, filename, DEBUG=False, ERR=True):
     if os.path.isfile(filename):
         return  # is already downloaded
+    user_agent = get_user_agent()
+    headers = {"User-Agent": user_agent}
     try:
         req = urllib.request.Request(url, data=None, headers=headers)
         response = urllib.request.urlopen(req)
