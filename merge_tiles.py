@@ -2,15 +2,16 @@ from PIL import Image
 import sys, os
 from gmap_utils import *
 
+
 def mergeTiles(source, zoom, xxx_todo_changeme):
     (lat_start, lat_stop, lon_start, lon_stop) = xxx_todo_changeme
-    if len(source)!=1:
-        print('-- unknown external source')
+    if len(source) != 1:
+        print("-- unknown external source")
         return
-    key  = list(source.keys())[0]
-    ext  = source[key]
-    TYPE = ext['type']
-    EXT  = ext['ext']
+    key = list(source.keys())[0]
+    ext = source[key]
+    TYPE = ext["type"]
+    EXT = ext["ext"]
     x_start, y_start = latlon2xy(zoom, lat_start, lon_start)
     x_stop, y_stop = latlon2xy(zoom, lat_stop, lon_stop)
     print("x range", x_start, x_stop)
@@ -32,8 +33,8 @@ def mergeTiles(source, zoom, xxx_todo_changeme):
                 i = Image.open(filename)
             except Exception as e:
                 print("-- %s, removing %s" % (e, filename))
-                #trash_dst = os.path.expanduser("~/.Trash/%s" % filename)
-                #os.rename(filename, trash_dst)
+                # trash_dst = os.path.expanduser("~/.Trash/%s" % filename)
+                # os.rename(filename, trash_dst)
                 os.remove(filename)
                 continue
             result.paste(i, (x_paste, y_paste))
@@ -45,7 +46,8 @@ def mergeTiles(source, zoom, xxx_todo_changeme):
 
 def main():
     from sources import searchSource
-    found_sources = searchSource('sources.json',search={'type':'sat'})
+
+    found_sources = searchSource("sources.json", search={"type": "sat"})
     key = list(found_sources.keys())[0]
     source = {key: found_sources[key]}
     zoom = 10
@@ -54,6 +56,5 @@ def main():
     mergeTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
