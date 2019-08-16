@@ -4,24 +4,21 @@ import urllib.request, urllib.error, urllib.parse
 import os, sys
 from gmap_utils import *
 
-import threading
-
 try:
     from fake_useragent import UserAgent  # https://github.com/hellysmile/fake-useragent
     print("Using random user agents.")
-except:
+except ImportError:
     print("Using default user agent.")
-    pass
 
 import time
 import random
 from tqdm import tqdm
 import numpy as np
+from multiprocessing.pool import ThreadPool
 
 
 def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ERR=True):
     (lat_start, lat_stop, lon_start, lon_stop) = xxx_todo_changeme
-    spawn_count = 0
     if len(source) != 1:
         if ERR:
             print("-- unknown data source")
@@ -41,7 +38,9 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
     y_range = range(start_y, stop_y)
     xy_range = np.array(np.meshgrid(x_range, y_range)).T.reshape(-1, 2)
 
-    for x, y in tqdm(xy_range):
+    filenames = list()
+    urls = list()
+    for x, y in xy_range:
         filename = "%s_%s_%d_%d_%d.%s" % (key, ext["type"], zoom, x, y, ext["ext"])
         url = ""
         url += str(ext["prefix"])
@@ -49,36 +48,24 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
         url += str(ext["y"]) + str(y)
         url += str(ext["zoom"]) + str(zoom)
         url += str(ext["postfix"])
-        if not os.path.exists(filename):
-            if max_threads > 1:
-                threads = []
-                for i in range(max_threads):
-                    t = threading.Thread(
-                        target=worker, args=(url, filename)
-                    )
-                    threads.append(t)
-                    t.start()
-                    spawn_count += 1
-                    time.sleep(random.random() / max_threads)
-                for i in range(len(threads)):
-                    threads[i].join()
-            else:
-                worker(url, filename)
-            time.sleep(1 + random.random())
+        filenames.append(filename)
+        urls.append(url)
+
+    with ThreadPool(max_threads) as pool:
+        data = zip(urls, filenames)
+        list(tqdm(pool.imap(worker_wait_unpack, data), total=len(urls)))
 
 
 def get_user_agent():
     try:
         ua = UserAgent()
         user_agent = ua.random
-    except UnboundLocalError:
+    except NameError:  # UserAgent not defined
         user_agent = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_9; us-at) AppleWebKit/533.23.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.3"
     return user_agent
 
 
 def worker(url, filename, DEBUG=False, ERR=True):
-    if os.path.isfile(filename):
-        return  # is already downloaded
     user_agent = get_user_agent()
     headers = {"User-Agent": user_agent}
     try:
@@ -98,6 +85,13 @@ def worker(url, filename, DEBUG=False, ERR=True):
     f = open(filename, "wb")
     f.write(received_bytes)
     f.close()
+
+
+def worker_wait_unpack(data):
+    url, filename = data
+    if not os.path.exists(filename):
+        worker(url, filename)
+        time.sleep(1 + random.random())
 
 
 def main():
