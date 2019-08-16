@@ -48,14 +48,17 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
             url += str(ext["zoom"]) + str(zoom)
             url += str(ext["postfix"])
             if not os.path.exists(filename):
-                user_agent = ua.random
+                try:
+                    user_agent = ua.random
+                except UnboundLocalError:
+                    pass
                 if max_threads > 1:
                     threads = []
                     for i in range(max_threads):
                         try:
                             user_agent = ua.random
                             headers = {"User-Agent": user_agent}
-                        except:
+                        except UnboundLocalError:
                             pass
                         t = threading.Thread(
                             target=worker, args=(url, filename, user_agent, headers)
