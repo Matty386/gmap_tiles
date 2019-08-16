@@ -20,7 +20,7 @@ def mergeTiles(source, zoom, xxx_todo_changeme):
     h = (y_stop - y_start) * 256
     print("width:", w)
     print("height:", h)
-    result = Image.new("RGBA", (w, h))
+    result = Image.new("RGB", (w, h))
     for x in range(x_start, x_stop):
         for y in range(y_start, y_stop):
             filename = "%s_%s_%d_%d_%d.%s" % (key, TYPE, zoom, x, y, EXT)
