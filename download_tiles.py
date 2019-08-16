@@ -88,23 +88,22 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
 def worker(url, filename, user_agent, headers, DEBUG=False, ERR=True):
     if os.path.isfile(filename):
         return  # is already downloaded
-    bytes = None
     try:
         req = urllib.request.Request(url, data=None, headers=headers)
         response = urllib.request.urlopen(req)
-        bytes = response.read()
+        received_bytes = response.read()
     except Exception as e:
         if ERR:
             print("--", filename, "->", e)
         sys.exit(1)
-    if bytes.startswith(b"<html>"):
+    if received_bytes.startswith(b"<html>"):
         if ERR:
             print("-- Forbidden", filename)
         sys.exit(1)
     if DEBUG:
         print("-- Saving", filename)
     f = open(filename, "wb")
-    f.write(bytes)
+    f.write(received_bytes)
     f.close()
 
 
