@@ -90,6 +90,8 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
 
 
 def worker(url, filename, user_agent, headers, DEBUG=False, ERR=True):
+    if os.path.isfile(filename):
+        return  # is already downloaded
     bytes = None
     try:
         req = urllib.request.Request(url, data=None, headers=headers)
