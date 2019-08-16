@@ -22,6 +22,11 @@ def main():
     key = list(found_sources.keys())[0]  # Just try first
     source = {key: found_sources[key]}
     ext = source[key]
+
+    out_dir = "%s-%s_%s-%s_%d" % (lat_start, lon_start, lat_stop, lon_stop, zoom)
+    os.makedirs(out_dir, exist_ok=True)
+    os.chdir(out_dir)
+
     print("Downloading Tiles")
     downloadTiles(source, zoom, coord, max_threads=1)
     print("Merging Tiles")
