@@ -130,3 +130,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+        #  https://aiatsis.gov.au/sites/default/files/maps/aiatsis_map/6/62/56.png#
+        #  zoom = 6 x=1-62  y=1-56
+        #  https://aiatsis.gov.au/sites/default/files/maps/aiatsis_map/z/x/y.png
+        #  https://aiatsis.gov.au/sites/default/files/maps/aiatsis_map/6/5/3.png

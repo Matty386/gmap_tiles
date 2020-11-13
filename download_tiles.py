@@ -2,7 +2,7 @@
 
 import urllib.request, urllib.error, urllib.parse
 import os, sys
-from gmap_utils import *
+import gmap_utils
 
 import threading
 
@@ -19,8 +19,8 @@ from tqdm import tqdm
 import numpy as np
 
 
-def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ERR=True):
-    (lat_start, lat_stop, lon_start, lon_stop) = xxx_todo_changeme
+def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=3, DEBUG=True, ERR=True, method=" "):
+    # TODO (lat_start, lat_stop, lon_start, lon_stop) = xxx_todo_changeme
     try:
         ua = UserAgent()
     except:
@@ -32,8 +32,19 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
         return
     key = list(source.keys())[0]
     ext = source[key]
-    start_x, start_y = latlon2xy(zoom, lat_start, lon_start)
-    stop_x, stop_y = latlon2xy(zoom, lat_stop, lon_stop)
+
+    if method == "zxy_query":
+        start_x, start_y = gmap_utils.latlon2xy(zoom, lat_start, lon_start)
+        stop_x, stop_y = gmap_utils.latlon2xy(zoom, lat_stop, lon_stop)
+    else:
+        print("zxy_path")
+        # zoom = 6 x=1-62  y=1-56
+        start_x = 1
+        stop_x = 62
+
+        start_y = 1
+        stop_y = 56
+
     if DEBUG:
         print("x range", start_x, stop_x)
     if DEBUG:
@@ -45,16 +56,23 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
 
     x_range = range(start_x, stop_x)
     y_range = range(start_y, stop_y)
+    print(x_range)
+    print(y_range)
+
     xy_range = np.array(np.meshgrid(x_range, y_range)).T.reshape(-1, 2)
+    
 
     for x, y in tqdm(xy_range):
-        filename = "%s_%s_%d_%d_%d.%s" % (key, ext["type"], zoom, x, y, ext["ext"])
+        filename = "export/%s_%s_%d_%d_%d.%s" % (key, ext["type"], zoom, x, y, ext["ext"])
         url = ""
         url += str(ext["prefix"])
+        url += str(ext["zoom"]) + str(zoom)
         url += str(ext["x"]) + str(x)
         url += str(ext["y"]) + str(y)
-        url += str(ext["zoom"]) + str(zoom)
+
         url += str(ext["postfix"])
+        if DEBUG:
+            print(url)
         if not os.path.exists(filename):
             try:
                 user_agent = ua.random
@@ -78,6 +96,7 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
                 if DEBUG:
                     x_percent = float((start_x - x)) / float(start_x - stop_x)
                     y_percent = float((start_y - y)) / float(start_y - stop_y)
+                    print("x% {}, y% {}".format(x_percent, y_percent))
                 for i in range(len(threads)):
                     threads[i].join()
             else:
@@ -85,7 +104,7 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=1, DEBUG=True, ER
             time.sleep(1 + random.random())
 
 
-def worker(url, filename, user_agent, headers, DEBUG=False, ERR=True):
+def worker(url, filename, user_agent, headers, DEBUG=True, ERR=True):
     if os.path.isfile(filename):
         return  # is already downloaded
     try:

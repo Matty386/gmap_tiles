@@ -3,7 +3,7 @@ import sys, os
 from gmap_utils import *
 
 
-def mergeTiles(source, zoom, xxx_todo_changeme):
+def mergeTiles(source, zoom, xxx_todo_changeme, method):
     (lat_start, lat_stop, lon_start, lon_stop) = xxx_todo_changeme
     if len(source) != 1:
         print("-- unknown external source")
@@ -12,8 +12,21 @@ def mergeTiles(source, zoom, xxx_todo_changeme):
     ext = source[key]
     TYPE = ext["type"]
     EXT = ext["ext"]
-    x_start, y_start = latlon2xy(zoom, lat_start, lon_start)
-    x_stop, y_stop = latlon2xy(zoom, lat_stop, lon_stop)
+
+
+    if method == "zxy_query":
+        x_start, y_start = latlon2xy(zoom, lat_start, lon_start)
+        x_stop, y_stop = latlon2xy(zoom, lat_stop, lon_stop)
+    else:
+        print("zxy_path")
+        # zoom = 6 x=1-62  y=1-56
+        x_start = 1
+        x_stop = 62
+
+        y_start = 1
+        y_stop = 56
+
+
     print("x range", x_start, x_stop)
     print("y range", y_start, y_stop)
     w = (x_stop - x_start) * 256
@@ -23,7 +36,7 @@ def mergeTiles(source, zoom, xxx_todo_changeme):
     result = Image.new("RGB", (w, h))
     for x in range(x_start, x_stop):
         for y in range(y_start, y_stop):
-            filename = "%s_%s_%d_%d_%d.%s" % (key, TYPE, zoom, x, y, EXT)
+            filename = "export/%s_%s_%d_%d_%d.%s" % (key, TYPE, zoom, x, y, EXT)
             if not os.path.exists(filename):
                 print("-- missing", filename)
                 continue
@@ -53,7 +66,8 @@ def main():
     zoom = 10
     lat_start, lon_start = 36.99, -114.03
     lat_stop, lon_stop = 35.64, -111.60
-    mergeTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop))
+    method = "zxy_query"
+    mergeTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop), method)
 
 
 if __name__ == "__main__":

@@ -41,13 +41,26 @@
         "9": "2311162.307000"
     }, 
     "sources": {
-        "-613008836546386633": {
+        "abc": {
+            "ext": "png", 
+            "name": "aiatsis map", 
+            "notes": "this is a tiled image no co-ordinate system", 
+            "postfix": ".png", 
+            "prefix": "https://aiatsis.gov.au/sites/default/files/maps/aiatsis_map", 
+            "type": "aiatsis image", 
+            "method" :"zxy_path",
+            "x": "/", 
+            "y": "/", 
+            "zoom": "/"
+        },
+        "abcd": {
             "ext": "jpg", 
             "name": "Google Satellite", 
             "notes": "Google will blacklist overuse for 24H, v=708 is the API version number which will sometimes be updated and must be correct, and normally discourages direct access like this. The http or https links work equally.", 
             "postfix": "", 
             "prefix": "https://khm2.google.com/kh/v=708&s=Gal", 
             "type": "satellite", 
+            "method": "zxy_query",
             "x": "&x=", 
             "y": "&y=", 
             "zoom": "&z="
@@ -59,6 +72,7 @@
             "postfix": "", 
             "prefix": "https://mt1.google.com/vt/lyrs=h@162000000&hl=en", 
             "type": "road", 
+            "method": "xyz_query",
             "x": "&x=", 
             "y": "&s=&y=", 
             "zoom": "&z="
