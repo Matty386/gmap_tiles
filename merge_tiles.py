@@ -3,8 +3,8 @@ import sys, os
 from gmap_utils import *
 
 
-def mergeTiles(source, zoom, xxx_todo_changeme, method):
-    (lat_start, lat_stop, lon_start, lon_stop) = xxx_todo_changeme
+def mergeTiles(source, zoom, coord_yyxx, method):
+    (y_lat_start, y_lat_stop, x_lon_start, x_lon_stop) = coord_yyxx
     if len(source) != 1:
         print("-- unknown external source")
         return
@@ -12,36 +12,38 @@ def mergeTiles(source, zoom, xxx_todo_changeme, method):
     ext = source[key]
     TYPE = ext["type"]
     EXT = ext["ext"]
+    tile_size = 256
+    #tile_size = 254 # rare maps overlap
 
-
-    if method == "zxy_query":
-        x_start, y_start = latlon2xy(zoom, lat_start, lon_start)
-        x_stop, y_stop = latlon2xy(zoom, lat_stop, lon_stop)
+    if "coord" in method: 
+        x_start, y_start = latlon2xy(zoom, y_lat_start, x_lon_start)
+        x_stop, y_stop = latlon2xy(zoom, y_lat_stop, x_lon_stop)
     else:
         print("zxy_path")
         # zoom = 6 x=1-62  y=1-56
-        x_start = 1
-        x_stop = 62
+        x_start = x_lon_start
+        x_stop = x_lon_stop
 
-        y_start = 1
-        y_stop = 56
+        y_start = y_lat_start
+        y_stop = y_lat_stop
+
 
 
     print("x range", x_start, x_stop)
     print("y range", y_start, y_stop)
-    w = (x_stop - x_start) * 256
-    h = (y_stop - y_start) * 256
+    w = (x_stop - x_start) * tile_size
+    h = (y_stop - y_start) * tile_size
     print("width:", w)
     print("height:", h)
     result = Image.new("RGB", (w, h))
     for x in range(x_start, x_stop):
         for y in range(y_start, y_stop):
-            filename = "export/%s_%s_%d_%d_%d.%s" % (key, TYPE, zoom, x, y, EXT)
+            filename = "export/%s/%s_%s_%d_%d_%d.%s" % (key, key, TYPE, zoom, x, y, EXT)
             if not os.path.exists(filename):
                 print("-- missing", filename)
                 continue
-            x_paste = (x - x_start) * 256
-            y_paste = h - (y_stop - y) * 256
+            x_paste = (x - x_start) * tile_size
+            y_paste = h - (y_stop - y) * tile_size
             try:
                 i = Image.open(filename)
             except Exception as e:

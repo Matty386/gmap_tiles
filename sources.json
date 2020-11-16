@@ -41,17 +41,18 @@
         "9": "2311162.307000"
     }, 
     "sources": {
-        "abc": {
+        "aiatsis": {
             "ext": "png", 
             "name": "aiatsis map", 
             "notes": "this is a tiled image no co-ordinate system", 
             "postfix": ".png", 
             "prefix": "https://aiatsis.gov.au/sites/default/files/maps/aiatsis_map", 
-            "type": "aiatsis image", 
+            "type": "image", 
             "method" :"zxy_path",
             "x": "/", 
             "y": "/", 
-            "zoom": "/"
+            "zoom": "/",
+            "max_zoom":"6"
         },
         "abcd": {
             "ext": "jpg", 
@@ -60,7 +61,7 @@
             "postfix": "", 
             "prefix": "https://khm2.google.com/kh/v=708&s=Gal", 
             "type": "satellite", 
-            "method": "zxy_query",
+            "method": "xyz_coord",
             "x": "&x=", 
             "y": "&y=", 
             "zoom": "&z="
@@ -72,7 +73,7 @@
             "postfix": "", 
             "prefix": "https://mt1.google.com/vt/lyrs=h@162000000&hl=en", 
             "type": "road", 
-            "method": "xyz_query",
+            "method": "xyz_coord",
             "x": "&x=", 
             "y": "&s=&y=", 
             "zoom": "&z="

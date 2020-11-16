@@ -19,8 +19,8 @@ from tqdm import tqdm
 import numpy as np
 
 
-def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=3, DEBUG=True, ERR=True, method=" "):
-    # TODO (lat_start, lat_stop, lon_start, lon_stop) = xxx_todo_changeme
+def downloadTiles(source, zoom, coord_yyxx, max_threads=3, DEBUG=False, ERR=True, method=" "):
+    (y_lat_start, y_lat_stop, x_lon_start, x_lon_stop) = coord_yyxx
     try:
         ua = UserAgent()
     except:
@@ -33,17 +33,18 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=3, DEBUG=True, ER
     key = list(source.keys())[0]
     ext = source[key]
 
-    if method == "zxy_query":
-        start_x, start_y = gmap_utils.latlon2xy(zoom, lat_start, lon_start)
-        stop_x, stop_y = gmap_utils.latlon2xy(zoom, lat_stop, lon_stop)
+    # "zxy_coord":
+    if "coord" in method: 
+        start_x, start_y = gmap_utils.latlon2xy(zoom, y_lat_start, x_lon_start)
+        stop_x, stop_y = gmap_utils.latlon2xy(zoom, y_lat_stop, x_lon_stop)
     else:
         print("zxy_path")
         # zoom = 6 x=1-62  y=1-56
-        start_x = 1
-        stop_x = 62
+        start_x = x_lon_start
+        stop_x = x_lon_stop
 
-        start_y = 1
-        stop_y = 56
+        start_y = y_lat_start
+        stop_y = y_lat_stop
 
     if DEBUG:
         print("x range", start_x, stop_x)
@@ -56,19 +57,33 @@ def downloadTiles(source, zoom, xxx_todo_changeme, max_threads=3, DEBUG=True, ER
 
     x_range = range(start_x, stop_x)
     y_range = range(start_y, stop_y)
-    print(x_range)
-    print(y_range)
+    if DEBUG:
+        print(x_range)
+        print(y_range)
 
     xy_range = np.array(np.meshgrid(x_range, y_range)).T.reshape(-1, 2)
     
+    path = filename = "export/%s" % (key)
+    try:
+        os.mkdir(path) 
+    except FileExistsError:
+        pass
+    
 
     for x, y in tqdm(xy_range):
-        filename = "export/%s_%s_%d_%d_%d.%s" % (key, ext["type"], zoom, x, y, ext["ext"])
+        filename = "export/%s/%s_%s_%d_%d_%d.%s" % (key, key, ext["type"], zoom, x, y, ext["ext"])
         url = ""
         url += str(ext["prefix"])
-        url += str(ext["zoom"]) + str(zoom)
-        url += str(ext["x"]) + str(x)
-        url += str(ext["y"]) + str(y)
+
+        if "zxy" in method:
+            url += str(ext["zoom"]) + str(zoom)
+            url += str(ext["x"]) + str(x)
+            url += str(ext["y"]) + str(y)
+
+        elif "xyz" in method:
+            url += str(ext["x"]) + str(x)
+            url += str(ext["y"]) + str(y)
+            url += str(ext["zoom"]) + str(zoom)
 
         url += str(ext["postfix"])
         if DEBUG:
@@ -129,14 +144,20 @@ def worker(url, filename, user_agent, headers, DEBUG=True, ERR=True):
 def main():
     from sources import searchSource, ppjson
 
-    found_sources = searchSource("sources.json", search={"type": "sat"})
+    found_sources = searchSource("sources.json", search={"name": "raremaps"})
     key = list(found_sources.keys())[0]
+    print(found_sources.keys())
+
     source = {key: found_sources[key]}
     ppjson(source)
+        
+    #google
     zoom = 10
-    lat_start, lon_start = 36.99, -114.03
-    lat_stop, lon_stop = 35.64, -111.60
-    downloadTiles(source, zoom, (lat_start, lat_stop, lon_start, lon_stop))
+    y_lat_start, x_lon_start = 36.99, -114.03
+    y_lat_stop, x_lon_stop = 35.64, -111.60
+
+
+    downloadTiles(source, zoom, (y_lat_start, y_lat_stop, x_lon_start, x_lon_stop), max_threads=4)
 
 
 if __name__ == "__main__":

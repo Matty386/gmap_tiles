@@ -204,7 +204,7 @@ class GmapRender:
         """
         return len(self._download_threads)
 
-    def px2latlon(self, xxx_todo_changeme):
+    def px2latlon(self, coord_xy):
         """
         On self._image_out of size: self._res=(width,height)
         Given input (x,y) return (lat,lon) or None on invalid pixel input.
@@ -213,7 +213,7 @@ class GmapRender:
           https://github.com/nst/gmap_tiles
           https://groups.google.com/forum/#!topic/Google-Maps-API/NICY9wcl_JY
         """
-        (x, y) = xxx_todo_changeme
+        (x, y) = coord_xy
         if type(x) != type(int(0)):
             return None
         if type(y) != type(int(0)):
